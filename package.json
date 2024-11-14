@@ -1,0 +1,30 @@
+{
+    "name": "nextjs-chat-app",
+    "version": "1.0.0",
+    "description": "A real-time chat application using Next.js and Socket.io",
+    "main": "server.js",
+    "scripts": {
+      "dev": "concurrently \"next dev\" \"node server.js\"",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    },
+    "dependencies": {
+      "express": "^4.18.2",
+      "next": "^13.0.0",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "socket.io": "^4.7.2",
+      "socket.io-client": "^4.7.2"
+    },
+    "devDependencies": {
+      "concurrently": "^8.2.0"
+    },
+    "engines": {
+      "node": ">=16.0.0"
+    },
+    "keywords": ["nextjs", "socket.io", "chat-app", "real-time", "express"],
+    "author": "Your Name",
+    "license": "MIT"
+  }
+  
