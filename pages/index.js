@@ -7,6 +7,16 @@ export default function Home() {
   const [messages, setMessages] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
 
+  // Function to fetch messages from the server
+  const fetchMessages = async () => {
+    const response = await fetch("/api/message", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+    setMessages(data); // Set fetched messages
+  };
+
   useEffect(() => {
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
@@ -23,19 +33,11 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      const response = await fetch("/api/message", { method: "GET" });
-      const data = await response.json();
-      setMessages(data);
-    };
-  
-    fetchMessages();
-  }, []);
-  
-
-  const handleLogin = () => {
-    if (username.trim()) setLoggedIn(true);
+  const handleLogin = async () => {
+    if (username.trim()) {
+      setLoggedIn(true);
+      await fetchMessages(); // Fetch messages once user logs in
+    }
   };
 
   const sendMessage = async () => {
@@ -45,7 +47,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, message }),
       });
-      setMessage("");
+      setMessage(""); // Clear input after sending
     }
   };
 
