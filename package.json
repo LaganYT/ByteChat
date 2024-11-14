@@ -17,7 +17,9 @@
       "socket.io": "^4.7.2",
       "socket.io-client": "^4.7.2",
       "pusher": "latest",
-      "pusher-js": "latest"
+      "pusher-js": "latest",
+      "tailwindcss": "latest",
+      "@supabase/supabase-js": "latest"
     },
     "devDependencies": {
       "concurrently": "^8.2.0"
