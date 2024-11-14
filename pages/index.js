@@ -1,49 +1,47 @@
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-
-const socket = io('https://byte-chat-ochre.vercel.app:3001'); // Connect to Socket.io server
+import { useEffect, useState } from "react";
+import Pusher from "pusher-js";
 
 export default function Home() {
-  const [username, setUsername] = useState('');
-  const [userList, setUserList] = useState([]);
-  const [message, setMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Receive user list updates
-    socket.on('userList', (users) => {
-      setUserList(users);
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
     });
 
-    // Receive incoming messages
-    socket.on('message', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    const channel = pusher.subscribe("chat-channel");
+    channel.bind("new-message", (data) => {
+      setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     return () => {
-      socket.disconnect();
+      channel.unbind_all();
+      channel.unsubscribe();
     };
   }, []);
 
   const handleLogin = () => {
-    if (username.trim() !== '') {
-      socket.emit('addUser', username);
-      setLoggedIn(true);
-    }
+    if (username.trim()) setLoggedIn(true);
   };
 
-  const sendMessage = () => {
-    if (message.trim() !== '') {
-      socket.emit('message', message);
-      setMessage('');
+  const sendMessage = async () => {
+    if (message.trim()) {
+      await fetch("/api/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, message }),
+      });
+      setMessage("");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
+    <div className="flex flex-col items-center justify-center h-screen p-4 bg-gray-100">
       {!loggedIn ? (
-        <div className="login flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <input
             type="text"
             placeholder="Enter your username"
@@ -56,19 +54,11 @@ export default function Home() {
           </button>
         </div>
       ) : (
-        <div className="chat-container w-full max-w-md mx-auto">
-          <div className="users-list mb-4">
-            <h3>Active Users</h3>
-            <ul className="list-disc pl-4">
-              {userList.map((user, index) => (
-                <li key={index}>{user}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="chat-box border border-gray-300 p-4 mb-4 h-64 overflow-y-auto bg-white">
+        <div className="w-full max-w-md mx-auto">
+          <div className="border border-gray-300 p-4 mb-4 h-64 overflow-y-auto bg-white">
             {messages.map((msg, index) => (
               <div key={index}>
-                <strong>{msg.user}:</strong> {msg.text}
+                <strong>{msg.username}:</strong> {msg.message}
               </div>
             ))}
           </div>
