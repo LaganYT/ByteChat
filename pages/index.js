@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3001'); // Connect to Socket.io server
+const socket = io('https://byte-chat-ochre.vercel.app:3001'); // Connect to Socket.io server
 
 export default function Home() {
   const [username, setUsername] = useState('');

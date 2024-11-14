@@ -4,7 +4,7 @@ const nextConfig = {
       return [
         {
           source: '/api/:path*',
-          destination: `byte-chat-ochre.vercel.app:3001/:path*`, // Proxy to Socket.io server
+          destination: `https://byte-chat-ochre.vercel.app:3001/:path*`, // Proxy to Socket.io server
         },
       ];
     },
